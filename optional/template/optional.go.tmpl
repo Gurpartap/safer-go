@@ -199,3 +199,28 @@ func (opt *_{{ .WrapperName }}) String() string {
 	}
 	return "None"
 }
+
+// MarshalJSON implements the json Marshaler interface.
+func (opt _{{ .WrapperName }}) MarshalJSON() ([]byte, error) {
+	if !opt.getHasValue() {
+		return []byte("null"), nil
+	}
+	return json.Marshal(opt.getUnsafeValue())
+}
+
+// UnmarshalJSON implements the json Unmarshaler interface.
+func (opt *_{{ .WrapperName }}) UnmarshalJSON(data []byte) error {
+	if bytes.Equal(data, []byte("null")) || data == nil {
+		opt.Take()
+		return nil
+	}
+
+	err := json.Unmarshal(data, &opt.unsafeValue)
+	if err != nil {
+		opt.hasValue = false
+		return err
+	}
+	opt.hasValue = true
+
+	return nil
+}
