@@ -74,7 +74,7 @@ func NewInt64() Int64 {
     // ...
 }
 
-func Int64From(value int64) Int64 {
+func Int64From(value int64, hasValue bool) Int64 {
     // ...
 }
 
@@ -101,7 +101,7 @@ $ go run cmd/optionalize/main.go -wrapper=OptionalAddress -wrapped=Address
 
 ## Built-In Optional Types
 
-| wrapped | optional \<T> | optional (slice of \<T>) | optional (slice of (optional \<T>)) |
+| T | optional \<T> | optional (slice of \<T>) | optional (slice of (optional \<T>)) |
 |---|---|---|---|
 | bool | optional.Bool | optional.BoolSlice | optional.OptionalBoolSlice |
 | uint8 | optional.UInt8 | optional.UInt8Slice | optional.OptionalUInt8Slice |
@@ -119,10 +119,10 @@ $ go run cmd/optionalize/main.go -wrapper=OptionalAddress -wrapped=Address
 | string | optional.String | optional.StringSlice | optional.OptionalStringSlice |
 | int | optional.Int | optional.IntSlice | optional.OptionalIntSlice |
 | uint | optional.UInt | optional.UIntSlice | optional.OptionalUIntSlice |
-| bytes | optional.Bytes | optional.BytesSlice | optional.OptionalBytesSlice |
+| []byte | optional.Bytes | optional.BytesSlice | optional.OptionalBytesSlice |
 | rune | optional.Rune | optional.RuneSlice | optional.OptionalRuneSlice |
 | error | optional.Error | optional.ErrorSlice | optional.OptionalErrorSlice |
-| time | optional.Time | optional.TimeSlice | optional.OptionalTimeSlice |
+| time.Time | optional.Time | optional.TimeSlice | optional.OptionalTimeSlice |
 
 
 ## Usage
