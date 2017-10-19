@@ -84,6 +84,12 @@ func (opt Int64) MarshalJSON() ([]byte, error) {...}
 
 // UnmarshalJSON implements the json Unmarshaler interface.
 func (opt *Int64) UnmarshalJSON(data []byte) error {...}
+
+// Scan implements the sql Scanner interface.
+func (opt *Int64) Scan(value interface{}) error {...}
+
+// Value implements the driver Valuer interface.
+func (opt Int64) Value() (driver.Value, error) {...}
 ```
 
 Replace `Int64` and `int64` with your wrapper type name and wrapped type respectively. Example:

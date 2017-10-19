@@ -9,6 +9,7 @@ import (
 	{{ range .ImportPackages }}
 	"{{ . }}"
 	{{ end }}
+	"github.com/Gurpartap/safer-go/optional/internal/convert"
 	"github.com/pkg/errors"
 )
 
@@ -176,4 +177,29 @@ func (opt *{{ .WrapperName }}) UnmarshalJSON(data []byte) error {
 	opt.hasValue = true
 
 	return nil
+}
+
+// Scan implements the sql Scanner interface.
+func (opt *{{ .WrapperName }}) Scan(value interface{}) error {
+	if value == nil {
+		opt.Take()
+		return nil
+	}
+
+	var unsafeValue {{ .WrappedName }}
+	err := convert.ConvertAssign(&unsafeValue, value)
+	if err != nil {
+		return err
+	}
+	opt.From(unsafeValue)
+
+	return nil
+}
+
+// Value implements the driver Valuer interface.
+func (opt {{ .WrapperName }}) Value() (driver.Value, error) {
+	if !opt.getHasValue() {
+		return nil, nil
+	}
+	return opt.getUnsafeValue(), nil
 }
