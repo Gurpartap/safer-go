@@ -82,9 +82,11 @@ func New{{ .WrapperName | title }}() {{ .WrapperName }} {
 	return opt
 }
 
-func {{ .WrapperName | title }}From(value {{ .WrappedName }}) {{ .WrapperName }} {
+func {{ .WrapperName | title }}From(value {{ .WrappedName }}, hasValue bool) {{ .WrapperName }} {
 	opt := &_{{ .WrapperName }}{}
-	opt.From(value)
+	if hasValue {
+		opt.From(value)
+	}
 	return opt
 }
 
