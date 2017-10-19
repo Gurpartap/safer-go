@@ -1,5 +1,6 @@
 .PHONY: generate
 generate:
+	go run cmd/optionalize/main.go -wrapper=String                  -wrapped=string
 	go run cmd/optionalize/main.go -wrapper=Bool                    -wrapped=bool
 	go run cmd/optionalize/main.go -wrapper=UInt8                   -wrapped=uint8
 	go run cmd/optionalize/main.go -wrapper=UInt16                  -wrapped=uint16
@@ -13,7 +14,6 @@ generate:
 	go run cmd/optionalize/main.go -wrapper=Float64                 -wrapped=float64
 	go run cmd/optionalize/main.go -wrapper=Complex64               -wrapped=complex64
 	go run cmd/optionalize/main.go -wrapper=Complex128              -wrapped=complex128
-	go run cmd/optionalize/main.go -wrapper=String                  -wrapped=string
 	go run cmd/optionalize/main.go -wrapper=Int                     -wrapped=int
 	go run cmd/optionalize/main.go -wrapper=UInt                    -wrapped=uint
 	go run cmd/optionalize/main.go -wrapper=Bytes                   -wrapped=[]byte

@@ -14,82 +14,34 @@ import (
 
 {{ end }}
 
-type {{ .WrapperName }} interface {
-	// Take takes the value out of the option, leaving a None in its place.
-	Take()
-
-	// From performs the conversion.
-	From(value {{ .WrappedName }})
-
-	// Unwrap moves the value out of the optional, if it is Some(value).
-	// This function returns multiple values, and if that's undesirable,
-    // consider using Some and None functions.
-	Unwrap() ({{ .WrappedName }}, bool)
-
-	// UnwrapOr returns the contained value or a default.
-	UnwrapOr(def {{ .WrappedName }}) {{ .WrappedName }}
-
-	// UnwrapOrElse returns the contained value or computes it from a closure.
-	UnwrapOrElse(fn func() {{ .WrappedName }}) {{ .WrappedName }}
-
-	// UnwrapOrPanic returns the contained value or panics.
-	UnwrapOrPanic() {{ .WrappedName }}
-
-	// And returns None if the optional is None, otherwise returns optb.
-	And(optb {{ .WrapperName }}) {{ .WrapperName }}
-
-	// Or returns the optional if it contains a value, otherwise returns optb.
-	Or(optb {{ .WrapperName }}) {{ .WrapperName }}
-	
-	// OrElse returns the optional if it contains a value, otherwise calls fn
-	// and returns the result.
-	OrElse(fn func() {{ .WrapperName }}) {{ .WrapperName }}
-	
-    // IsSome returns true if the optional is a Some value.
-    IsSome() bool
-
-    // IsNone returns true if the optional is a None value.
-    IsNone() bool
-
-    // Some executes the given closure if there is a Some value.
-	Some(fn func(value {{ .WrappedName }})) some{{ .WrapperName | title }}Handler
-
-    // None executes the given closure if there is a None value.
-    None(fn func())
-}
-
-type some{{ .WrapperName | title }}Handler interface {
-	None(fn func())
-}
-
-type _{{ .WrapperName }} struct {
+type {{ .WrapperName }} struct {
 	hasValue    bool
 	unsafeValue {{ .WrappedName }}
 }
 
 func New{{ .WrapperName | title }}() {{ .WrapperName }} {
-	opt := &_{{ .WrapperName }}{}
+	opt := &{{ .WrapperName }}{}
 	opt.Take()
-	return opt
+	return *opt
 }
 
 func {{ .WrapperName | title }}From(value {{ .WrappedName }}, hasValue bool) {{ .WrapperName }} {
-	opt := &_{{ .WrapperName }}{}
+	opt := &{{ .WrapperName }}{}
 	if hasValue {
 		opt.From(value)
 	}
-	return opt
+	return *opt
 }
 
 // Take takes the value out of the optional, leaving a None in its place.
-func (opt *_{{ .WrapperName }}) Take() {
+func (opt *{{ .WrapperName }}) Take() {
 	var value {{ .WrappedName }}
 	opt.unsafeValue = value
 	opt.hasValue = false
 }
 
 // From performs the conversion.
-func (opt *_{{ .WrapperName }}) From(value {{ .WrappedName }}) {
+func (opt *{{ .WrapperName }}) From(value {{ .WrappedName }}) {
 	opt.unsafeValue = value
 	opt.hasValue = true
 }
@@ -97,12 +49,12 @@ func (opt *_{{ .WrapperName }}) From(value {{ .WrappedName }}) {
 // Unwrap moves the value out of the optional, if it is Some(value).
 // This function returns multiple values, and if that's undesirable,
 // consider using Some and None functions.
-func (opt *_{{ .WrapperName }}) Unwrap() ({{ .WrappedName }}, bool) {
+func (opt *{{ .WrapperName }}) Unwrap() ({{ .WrappedName }}, bool) {
 	return opt.getUnsafeValue(), opt.getHasValue()
 }
 
 // UnwrapOr returns the contained value or a default.
-func (opt *_{{ .WrapperName }}) UnwrapOr(def {{ .WrappedName }}) {{ .WrappedName }} {
+func (opt *{{ .WrapperName }}) UnwrapOr(def {{ .WrappedName }}) {{ .WrappedName }} {
 	if opt.getHasValue() {
 		return opt.getUnsafeValue()
 	}
@@ -110,7 +62,7 @@ func (opt *_{{ .WrapperName }}) UnwrapOr(def {{ .WrappedName }}) {{ .WrappedName
 }
 
 // UnwrapOrElse returns the contained value or computes it from a closure.
-func (opt *_{{ .WrapperName }}) UnwrapOrElse(fn func() {{ .WrappedName }}) {{ .WrappedName }} {
+func (opt *{{ .WrapperName }}) UnwrapOrElse(fn func() {{ .WrappedName }}) {{ .WrappedName }} {
 	if opt.getHasValue() {
 		return opt.getUnsafeValue()
 	}
@@ -118,7 +70,7 @@ func (opt *_{{ .WrapperName }}) UnwrapOrElse(fn func() {{ .WrappedName }}) {{ .W
 }
 
 // UnwrapOrPanic returns the contained value or panics.
-func (opt *_{{ .WrapperName }}) UnwrapOrPanic() {{ .WrappedName }} {
+func (opt *{{ .WrapperName }}) UnwrapOrPanic() {{ .WrappedName }} {
 	if opt.getHasValue() {
 		return opt.getUnsafeValue()
 	}
@@ -126,75 +78,75 @@ func (opt *_{{ .WrapperName }}) UnwrapOrPanic() {{ .WrappedName }} {
 }
 
 // And returns None if the optional is None, otherwise returns optb.
-func (opt *_{{ .WrapperName }}) And(optb {{ .WrapperName }}) {{ .WrapperName }} {
+func (opt *{{ .WrapperName }}) And(optb {{ .WrapperName }}) {{ .WrapperName }} {
 	if !opt.getHasValue() {
-		return opt
+		return *opt
 	}
 	return optb
 }
 
 // Or returns the optional if it contains a value, otherwise returns optb.
-func (opt *_{{ .WrapperName }}) Or(optb {{ .WrapperName }}) {{ .WrapperName }} {
+func (opt *{{ .WrapperName }}) Or(optb {{ .WrapperName }}) {{ .WrapperName }} {
 	if opt.getHasValue() {
-		return opt
+		return *opt
 	}
 	return optb
 }
 
 // OrElse returns the optional if it contains a value, otherwise calls fn and
 // returns the result.
-func (opt *_{{ .WrapperName }}) OrElse(fn func() {{ .WrapperName }}) {{ .WrapperName }} {
+func (opt *{{ .WrapperName }}) OrElse(fn func() {{ .WrapperName }}) {{ .WrapperName }} {
 	if opt.getHasValue() {
-		return opt
+		return *opt
 	}
 	return fn()
 }
 
 // IsSome returns true if the optional is a Some value.
-func (opt *_{{ .WrapperName }}) IsSome() bool {
+func (opt *{{ .WrapperName }}) IsSome() bool {
 	return opt.getHasValue()
 }
 
 // IsNone returns true if the optional is a None value.
-func (opt *_{{ .WrapperName }}) IsNone() bool {
+func (opt *{{ .WrapperName }}) IsNone() bool {
 	return !opt.getHasValue()
 }
 
 // Some executes the given closure if there is a Some value.
-func (opt *_{{ .WrapperName }}) Some(fn func(value {{ .WrappedName }})) some{{ .WrapperName | title }}Handler {
+func (opt *{{ .WrapperName }}) Some(fn func(value {{ .WrappedName }})) some{{ .WrapperName | title }}Handler {
 	if opt.getHasValue() {
 		fn(opt.getUnsafeValue())
 	}
-	return _some{{ .WrapperName | title }}Handler{opt: opt}
+	return some{{ .WrapperName | title }}Handler{opt: opt}
 }
 
 // None executes the given closure if there is a None value.
-func (opt *_{{ .WrapperName }}) None(fn func()) {
+func (opt *{{ .WrapperName }}) None(fn func()) {
 	if !opt.getHasValue() {
 		fn()
 	}
 }
 
-type _some{{ .WrapperName | title }}Handler struct {
-	opt *_{{ .WrapperName }}
+type some{{ .WrapperName | title }}Handler struct {
+	opt *{{ .WrapperName }}
 }
 
-func (some _some{{ .WrapperName | title }}Handler) None(fn func()) {
+func (some some{{ .WrapperName | title }}Handler) None(fn func()) {
 	if !some.opt.getHasValue() {
 		fn()
 	}
 }
 
-func (opt *_{{ .WrapperName }}) getHasValue() bool {
+func (opt *{{ .WrapperName }}) getHasValue() bool {
 	return opt.hasValue
 }
 
-func (opt *_{{ .WrapperName }}) getUnsafeValue() {{ .WrappedName }} {
+func (opt *{{ .WrapperName }}) getUnsafeValue() {{ .WrappedName }} {
 	return opt.unsafeValue
 }
 
 // String conforms to fmt Stringer interface.
-func (opt *_{{ .WrapperName }}) String() string {
+func (opt *{{ .WrapperName }}) String() string {
 	if value, ok := opt.Unwrap(); ok {
 		return fmt.Sprintf("Some(%v)", value)
 	}
@@ -202,7 +154,7 @@ func (opt *_{{ .WrapperName }}) String() string {
 }
 
 // MarshalJSON implements the json Marshaler interface.
-func (opt _{{ .WrapperName }}) MarshalJSON() ([]byte, error) {
+func (opt {{ .WrapperName }}) MarshalJSON() ([]byte, error) {
 	if !opt.getHasValue() {
 		return []byte("null"), nil
 	}
@@ -210,7 +162,7 @@ func (opt _{{ .WrapperName }}) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON implements the json Unmarshaler interface.
-func (opt *_{{ .WrapperName }}) UnmarshalJSON(data []byte) error {
+func (opt *{{ .WrapperName }}) UnmarshalJSON(data []byte) error {
 	if bytes.Equal(data, []byte("null")) || data == nil {
 		opt.Take()
 		return nil

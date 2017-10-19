@@ -22,63 +22,68 @@ $ cat int64.go
 ```go
 package optional
 
-type Int64 interface {
-    // Take takes the value out of the option, leaving a None in its place.
-    Take()
+import ...
 
-    // From performs the conversion.
-    From(value int64)
+type Int64 struct {...}
 
-    // Unwrap moves the value out of the optional, if it is Some(value).
-    // This function returns multiple values, and if that's undesirable,
-    // consider using Some and None functions.
-    Unwrap() (int64, bool)
+func NewInt64() Int64 {...}
+func Int64From(value int64, hasValue bool) Int64 {...} 
 
-    // UnwrapOr returns the contained value or a default.
-    UnwrapOr(def int64) int64
+// Take takes the value out of the optional, leaving a None in its place.
+func (opt *Int64) Take() {...}
 
-    // UnwrapOrElse returns the contained value or computes it from a closure.
-    UnwrapOrElse(fn func() int64) int64
+// From performs the conversion.
+func (opt *Int64) From(value int64) {...}
 
-    // UnwrapOrPanic returns the contained value or panics.
-    UnwrapOrPanic() int64
+// Unwrap moves the value out of the optional, if it is Some(value).
+// This function returns multiple values, and if that's undesirable,
+// consider using Some and None functions.
+func (opt *Int64) Unwrap() (int64, bool) {...}
 
-    // And returns None if the optional is None, otherwise returns optb.
-    And(optb Int64) Int64
+// UnwrapOr returns the contained value or a default.
+func (opt *Int64) UnwrapOr(def int64) int64 {...}
 
-    // Or returns the option if it contains a value, otherwise returns optb.
-    Or(optb Int64) Int64
+// UnwrapOrElse returns the contained value or computes it from a closure.
+func (opt *Int64) UnwrapOrElse(fn func() int64) int64 {...}
 
-    // OrElse returns the option if it contains a value, otherwise calls fn and
-    // returns the result.
-    OrElse(fn func() Int64) Int64
+// UnwrapOrPanic returns the contained value or panics.
+func (opt *Int64) UnwrapOrPanic() int64 {...}
 
-    // IsSome returns true if the option is a Some value.
-    IsSome() bool
+// And returns None if the optional is None, otherwise returns optb.
+func (opt *Int64) And(optb Int64) Int64 {...}
 
-    // IsNone returns true if the option is a None value.
-    IsNone() bool
+// Or returns the optional if it contains a value, otherwise returns optb.
+func (opt *Int64) Or(optb Int64) Int64 {...}
 
-    // Some executes the given closure if there is a Some value.
-    Some(fn func(value int64)) someInt64Handler
+// OrElse returns the optional if it contains a value, otherwise calls fn and
+// returns the result.
+func (opt *Int64) OrElse(fn func() Int64) Int64 {...}
 
-    // None executes the given closure if there is a None value.
-    None(fn func())
-}
+// IsSome returns true if the optional is a Some value.
+func (opt *Int64) IsSome() bool {...}
 
-type someInt64Handler interface {
-    None(fn func())
-}
+// IsNone returns true if the optional is a None value.
+func (opt *Int64) IsNone() bool {...}
 
-func NewInt64() Int64 {
-    // ...
-}
+// Some executes the given closure if there is a Some value.
+func (opt *Int64) Some(fn func(value int64)) someInt64Handler {...}
 
-func Int64From(value int64, hasValue bool) Int64 {
-    // ...
-}
+// None executes the given closure if there is a None value.
+func (opt *Int64) None(fn func()) {...}
 
-// <Int64 Implementation />
+type someInt64Handler struct {...}
+
+// None executes the given closure if there is a None value.
+func (some someInt64Handler) None(fn func()) {...}
+
+// String conforms to fmt Stringer interface.
+func (opt *Int64) String() string {...}
+
+// MarshalJSON implements the json Marshaler interface.
+func (opt Int64) MarshalJSON() ([]byte, error) {...}
+
+// UnmarshalJSON implements the json Unmarshaler interface.
+func (opt *Int64) UnmarshalJSON(data []byte) error {...}
 ```
 
 Replace `Int64` and `int64` with your wrapper type name and wrapped type respectively. Example:
