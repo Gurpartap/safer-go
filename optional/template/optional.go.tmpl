@@ -37,17 +37,17 @@ type {{ .WrapperName }} interface {
 	// And returns None if the optional is None, otherwise returns optb.
 	And(optb {{ .WrapperName }}) {{ .WrapperName }}
 
-	// Or returns the option if it contains a value, otherwise returns optb.
+	// Or returns the optional if it contains a value, otherwise returns optb.
 	Or(optb {{ .WrapperName }}) {{ .WrapperName }}
 	
-	// OrElse returns the option if it contains a value, otherwise calls fn and
-	// returns the result.
+	// OrElse returns the optional if it contains a value, otherwise calls fn
+	// and returns the result.
 	OrElse(fn func() {{ .WrapperName }}) {{ .WrapperName }}
 	
-    // IsSome returns true if the option is a Some value.
+    // IsSome returns true if the optional is a Some value.
     IsSome() bool
 
-    // IsNone returns true if the option is a None value.
+    // IsNone returns true if the optional is a None value.
     IsNone() bool
 
     // Some executes the given closure if there is a Some value.
@@ -66,16 +66,6 @@ type _{{ .WrapperName }} struct {
 	unsafeValue {{ .WrappedName }}
 }
 
-// String conforms to fmt.Stringer interface.
-func (opt *_{{ .WrapperName }}) String() string {
-	if value, ok := opt.Unwrap(); ok {
-		// some
-		return fmt.Sprintf("Optional(%v)", value)
-	}
-	// none
-	return "nil"
-}
-
 func New{{ .WrapperName | title }}() {{ .WrapperName }} {
 	opt := &_{{ .WrapperName }}{}
 	opt.Take()
@@ -90,7 +80,7 @@ func {{ .WrapperName | title }}From(value {{ .WrappedName }}, hasValue bool) {{ 
 	return opt
 }
 
-// Take takes the value out of the option, leaving a None in its place.
+// Take takes the value out of the optional, leaving a None in its place.
 func (opt *_{{ .WrapperName }}) Take() {
 	var value {{ .WrappedName }}
 	opt.unsafeValue = value
@@ -142,7 +132,7 @@ func (opt *_{{ .WrapperName }}) And(optb {{ .WrapperName }}) {{ .WrapperName }} 
 	return optb
 }
 
-// Or returns the option if it contains a value, otherwise returns optb.
+// Or returns the optional if it contains a value, otherwise returns optb.
 func (opt *_{{ .WrapperName }}) Or(optb {{ .WrapperName }}) {{ .WrapperName }} {
 	if opt.getHasValue() {
 		return opt
@@ -150,7 +140,7 @@ func (opt *_{{ .WrapperName }}) Or(optb {{ .WrapperName }}) {{ .WrapperName }} {
 	return optb
 }
 
-// OrElse returns the option if it contains a value, otherwise calls fn and
+// OrElse returns the optional if it contains a value, otherwise calls fn and
 // returns the result.
 func (opt *_{{ .WrapperName }}) OrElse(fn func() {{ .WrapperName }}) {{ .WrapperName }} {
 	if opt.getHasValue() {
@@ -159,12 +149,12 @@ func (opt *_{{ .WrapperName }}) OrElse(fn func() {{ .WrapperName }}) {{ .Wrapper
 	return fn()
 }
 
-// IsSome returns true if the option is a Some value.
+// IsSome returns true if the optional is a Some value.
 func (opt *_{{ .WrapperName }}) IsSome() bool {
 	return opt.getHasValue()
 }
 
-// IsNone returns true if the option is a None value.
+// IsNone returns true if the optional is a None value.
 func (opt *_{{ .WrapperName }}) IsNone() bool {
 	return !opt.getHasValue()
 }
@@ -200,4 +190,12 @@ func (opt *_{{ .WrapperName }}) getHasValue() bool {
 
 func (opt *_{{ .WrapperName }}) getUnsafeValue() {{ .WrappedName }} {
 	return opt.unsafeValue
+}
+
+// String conforms to fmt.Stringer interface.
+func (opt *_{{ .WrapperName }}) String() string {
+	if value, ok := opt.Unwrap(); ok {
+		return fmt.Sprintf("Some(%v)", value)
+	}
+	return "None"
 }
