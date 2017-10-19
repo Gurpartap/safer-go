@@ -9,6 +9,7 @@ import (
 	{{ range .ImportPackages }}
 	"{{ . }}"
 	{{ end }}
+	"github.com/pkg/errors"
 )
 
 {{ end }}
@@ -192,7 +193,7 @@ func (opt *_{{ .WrapperName }}) getUnsafeValue() {{ .WrappedName }} {
 	return opt.unsafeValue
 }
 
-// String conforms to fmt.Stringer interface.
+// String conforms to fmt Stringer interface.
 func (opt *_{{ .WrapperName }}) String() string {
 	if value, ok := opt.Unwrap(); ok {
 		return fmt.Sprintf("Some(%v)", value)
@@ -218,7 +219,7 @@ func (opt *_{{ .WrapperName }}) UnmarshalJSON(data []byte) error {
 	err := json.Unmarshal(data, &opt.unsafeValue)
 	if err != nil {
 		opt.hasValue = false
-		return err
+		return errors.WithStack(err)
 	}
 	opt.hasValue = true
 
