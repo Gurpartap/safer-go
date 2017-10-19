@@ -156,7 +156,7 @@ var optc optional.OptionalInt64Slice // optional (slice of (optional <T>))
 
 opt := optional.StringFrom("foo")
 
-fmt.Println("opt:", opt)                         // => opt: Optional("foo")
+fmt.Println("opt:", opt)                         // => opt: Some("foo")
 
 // 1
 if opt, ok := opt.Unwrap(); ok {
